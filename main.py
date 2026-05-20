@@ -4,7 +4,7 @@ from enum import Enum, auto
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Vertical
+from textual.containers import Horizontal, Vertical
 from textual.message import Message
 from textual.reactive import reactive
 from textual.screen import ModalScreen, Screen
@@ -158,8 +158,8 @@ class PauseModal(ModalScreen[None]):
     def compose(self) -> ComposeResult:
         with Vertical():
             yield Label("PAUSED", id="pause-title")
-            yield Button("Resume  (P)", id="resume-btn", variant="primary")
-            yield Button("Quit Game  (Q)", id="quit-btn", variant="error")
+            yield Button("[bold yellow]P[/] Resume", id="resume-btn", variant="primary")
+            yield Button("[bold yellow]Q[/] Quit Game", id="quit-btn", variant="error")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "resume-btn":
@@ -199,11 +199,14 @@ class GameScreen(Screen):
         margin-top: 1;
     }
     #controls {
-        content-align: center middle;
         width: 100%;
-        height: 1;
+        height: auto;
         margin-top: 1;
-        color: $text-muted;
+        align: center middle;
+    }
+    #controls Button {
+        width: 12;
+        margin: 0 1;
     }
     """
 
@@ -228,7 +231,10 @@ class GameScreen(Screen):
             yield Label(f"TicTacToe — {mode_str}", id="title")
             yield BoardWidget(id="board")
             yield Static("", id="status")
-            yield Static("[R] Reset   [P] Pause/Menu   [Q] Quit", id="controls")
+            with Horizontal(id="controls"):
+                yield Button("[bold yellow]R[/] Reset", id="reset-btn")
+                yield Button("[bold yellow]P[/] Pause", id="pause-btn", variant="warning")
+                yield Button("[bold yellow]Q[/] Quit", id="quit-btn", variant="error")
 
     def on_mount(self) -> None:
         self.state.reset()
@@ -349,6 +355,14 @@ class GameScreen(Screen):
     def action_quit_game(self) -> None:
         self.app.exit()
 
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "reset-btn":
+            self.action_reset_game()
+        elif event.button.id == "pause-btn":
+            self.action_toggle_pause()
+        elif event.button.id == "quit-btn":
+            self.action_quit_game()
+
 
 class ModeScreen(Screen[GameMode]):
     DEFAULT_CSS = """
@@ -375,17 +389,28 @@ class ModeScreen(Screen[GameMode]):
     }
     """
 
+    BINDINGS = [
+        Binding("2", "select_two_player", "2 Players", priority=True),
+        Binding("a", "select_vs_ai", "vs AI", priority=True),
+    ]
+
     def compose(self) -> ComposeResult:
         yield Label("T I C T A C T O E", id="title")
         yield Label("Choose a game mode:", id="subtitle")
-        yield Button("  2 Players", id="two_player", variant="primary")
-        yield Button("  vs AI",     id="vs_ai",      variant="success")
+        yield Button("[bold yellow]2[/] Players", id="two_player", variant="primary")
+        yield Button("vs [bold yellow]A[/]I", id="vs_ai", variant="success")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "two_player":
-            self.dismiss(GameMode.TWO_PLAYER)
+            self.action_select_two_player()
         else:
-            self.dismiss(GameMode.VS_AI)
+            self.action_select_vs_ai()
+
+    def action_select_two_player(self) -> None:
+        self.dismiss(GameMode.TWO_PLAYER)
+
+    def action_select_vs_ai(self) -> None:
+        self.dismiss(GameMode.VS_AI)
 
 
 class TicTacToeApp(App[None]):
