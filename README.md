@@ -9,7 +9,7 @@ A terminal TicTacToe game with a text-based UI built in Python using [Textual](h
 
 - **Two game modes** — play against a friend or challenge the AI
 - **Unbeatable AI** — uses the minimax algorithm; best you can do is draw
-- **Keyboard-driven** — navigate the board with arrow keys, place pieces with Enter
+- **Keyboard and mouse support** — navigate with arrow keys or click cells and controls
 - **Win celebration** — the winning cells flash when the game ends
 - **Pause / resume** — step away mid-game without losing your position
 - **Instant reset** — start a new game at any time with a single key
@@ -41,7 +41,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-You will be presented with a mode selection screen. Use the mouse or Tab + Enter to choose a mode:
+You will be presented with a mode selection screen. Use the mouse, Tab + Enter, or the highlighted hotkeys to choose a mode:
 
 | Mode | Description |
 |---|---|
@@ -54,6 +54,9 @@ You will be presented with a mode selection screen. Use the mouse or Tab + Enter
 |---|---|
 | Arrow keys | Move the cursor around the board |
 | Enter / Space | Place your piece on the highlighted cell |
+| Mouse click | Select a cell or press an on-screen control |
+| `2` | Choose 2 Players on the mode screen |
+| `A` | Choose vs AI on the mode screen |
 | `R` | Reset the game and start over |
 | `P` | Pause / unpause |
 | `Q` | Quit the game |
